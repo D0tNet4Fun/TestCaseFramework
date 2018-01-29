@@ -11,8 +11,8 @@ namespace Automation.TestFramework.Execution
         public ExpectedResult ExpectedResult { get; }
 
         public ExpectedResultTestRunner(ITest test, Func<ITest, TestRunner> testRunnerFactory,
-            IMessageBus messageBus, object[] constructorArguments, string skipReason, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, Type testNotificationType)
-            : base(test, messageBus, constructorArguments, test.MethodInfo.ToRuntimeMethod(), skipReason, aggregator, cancellationTokenSource, testNotificationType)
+            TestCounter testCounter, IMessageBus messageBus, object[] constructorArguments, string skipReason, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, Type testNotificationType)
+            : base(test, testCounter, messageBus, constructorArguments, test.MethodInfo.ToRuntimeMethod(), skipReason, aggregator, cancellationTokenSource, testNotificationType)
         {
             ExpectedResult = new ExpectedResult(test, testRunnerFactory);
         }

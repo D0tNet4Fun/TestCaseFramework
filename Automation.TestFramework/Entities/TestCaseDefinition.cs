@@ -81,7 +81,7 @@ namespace Automation.TestFramework.Entities
 
             CheckForDuplicates(); // this can throw
 
-            UpdateDisplayNames(testCaseComponents.Count);
+            //UpdateDisplayNames(testCaseComponents.Count);
         }
 
         private void TryUpdateList(IList<ITest> list, int index, ITest test)

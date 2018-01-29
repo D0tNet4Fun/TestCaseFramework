@@ -18,7 +18,7 @@ namespace Automation.TestFramework.Tests
         public void ExpectedResult()
         {
             TestStep.Current.ExpectedResult
-                .Assert("This should fail", () => Assert.True(1 == 2))
+                .Assert("This should fail", () => Assert.False(1 == 2))
                 .Verify("This could work but it should not be called", () =>
                 {
                     _called = true;
