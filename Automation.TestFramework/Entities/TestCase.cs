@@ -32,8 +32,8 @@ namespace Automation.TestFramework.Entities
             return base.GetDisplayName(factAttribute, displayName);
         }
 
-        public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
-            => new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, messageBus, aggregator, cancellationTokenSource, _classFixtureMappings, _testNotificationType).RunAsync();
+        //public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
+        //    => new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, messageBus, aggregator, cancellationTokenSource, _classFixtureMappings, _testNotificationType).RunAsync();
 
         internal void SetClassFixtureMappings(Dictionary<Type, object> classFixtureMappings)
         {

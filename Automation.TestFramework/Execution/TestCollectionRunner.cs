@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Automation.TestFramework.Discovery;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -11,15 +12,17 @@ namespace Automation.TestFramework.Execution
 {
     internal class TestCollectionRunner : XunitTestCollectionRunner
     {
+        public ISourceInformationProvider SourceInformationProvider { get; }
         private readonly IMessageSink _diagnosticMessageSink;
 
         private readonly IDictionary<Type, object> _assemblyFixtureMappings;
         private readonly Type _assemblyTestNotificationType;
         private readonly int _maxParallelThreads;
 
-        public TestCollectionRunner(ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ITestCaseOrderer testCaseOrderer, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, IDictionary<Type, object> assemblyFixtureMappings, Type assemblyTestNotificationType, int maxParallelThreads)
+        public TestCollectionRunner(ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ITestCaseOrderer testCaseOrderer, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, IDictionary<Type, object> assemblyFixtureMappings, Type assemblyTestNotificationType, int maxParallelThreads, ISourceInformationProvider sourceInformationProvider)
             : base(testCollection, testCases, diagnosticMessageSink, messageBus, testCaseOrderer, aggregator, cancellationTokenSource)
         {
+            SourceInformationProvider = sourceInformationProvider;
             _diagnosticMessageSink = diagnosticMessageSink;
             _assemblyFixtureMappings = assemblyFixtureMappings;
             _assemblyTestNotificationType = assemblyTestNotificationType;
@@ -68,7 +71,15 @@ namespace Automation.TestFramework.Execution
             foreach (var kvp in CollectionFixtureMappings)
                 combinedFixtures[kvp.Key] = kvp.Value;
 
-            return new TestClassRunner(testClass, @class, testCases, _diagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, combinedFixtures, _assemblyTestNotificationType).RunAsync();
+            var list = new List<IXunitTestCase>(testCases);
+            // the test cases are the Summary methods from all selected classes
+            //foreach (var group in TestCases.GroupBy(tc => tc.TestMethod.TestClass, TestClassComparer.Instance))
+            {
+                var testCaseComponentDiscoverer = new TestCaseComponentDiscoverer(testClass, _diagnosticMessageSink, TestMethodDisplay.Method, SourceInformationProvider); // todo display
+                list.AddRange(testCaseComponentDiscoverer.Discover(MessageBus));
+            }
+
+            return new TestClassRunner(testClass, @class, list, _diagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, combinedFixtures, _assemblyTestNotificationType).RunAsync();
         }
     }
 }

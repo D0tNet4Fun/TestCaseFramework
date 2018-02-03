@@ -1,11 +1,14 @@
 ﻿using System;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Automation.TestFramework
 {
     /// <summary>
     /// Represents an attribute used to decorate a test method that represents a component of a test case.
     /// </summary>
-    public abstract class TestCaseComponentAttribute : Attribute
+    [XunitTestCaseDiscoverer("Automation.TestFramework.FakeDiscoverer", "Automation.TestFramework")]
+    public abstract class TestCaseComponentAttribute : FactAttribute
     {
         /// <summary>
         /// Gets the order in which the test method needs to be executed.
@@ -34,11 +37,11 @@ namespace Automation.TestFramework
         /// <summary>
         /// Gets the display name.
         /// </summary>
-        public string DisplayName
+        public override string DisplayName
         {
             get
             {
-                if (string.IsNullOrEmpty(Description)) throw new InvalidOperationException("Description is not set");
+                if (string.IsNullOrEmpty(Description)) return base.DisplayName;
                 return GetDisplayName(Description);
             }
         }

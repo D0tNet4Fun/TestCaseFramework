@@ -10,11 +10,13 @@ namespace Automation.TestFramework.Execution
 {
     internal class TestAssemblyRunner : XunitTestAssemblyRunner
     {
+        public ISourceInformationProvider SourceInformationProvider { get; }
         private Type _testNotificationType;
 
-        public TestAssemblyRunner(ITestAssembly testAssembly, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
+        public TestAssemblyRunner(ITestAssembly testAssembly, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, ISourceInformationProvider sourceInformationProvider)
             : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions)
         {
+            SourceInformationProvider = sourceInformationProvider;
         }
 
         #region AssemblyFixture - copied from Xunit Samples
@@ -64,6 +66,6 @@ namespace Automation.TestFramework.Execution
         }
 
         protected override Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource)
-            => new TestCollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings, _testNotificationType, ExecutionOptions.MaxParallelThreadsOrDefault()).RunAsync();
+            => new TestCollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings, _testNotificationType, ExecutionOptions.MaxParallelThreadsOrDefault(), SourceInformationProvider).RunAsync();
     }
 }
